@@ -1,6 +1,6 @@
 <?php
 
-namespace Jpk;
+namespace Netborg\Jpk;
 
 class GeneratorSmarty implements XMLGenerator
 {

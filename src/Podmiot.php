@@ -1,28 +1,59 @@
 <?php
 
-namespace Jpk;
+namespace Netborg\Jpk;
 
 class Podmiot
 {
-    public $nazwa;
-    public $nip;
-    public $regon;
-    public $ulica;
-    public $nrDomu;
-    public $nrLokalu;
-    public $wojewodztwo;
-    public $miejscowosc;
-    public $gmina;
-    public $poczta;
-    public $kodPocztowy;
-    public $prefixVat;
 
-    public function get_adres()
+    public const KLUCZE = [
+        'pelnaNazwa',
+        'nip',
+        'regon',
+        'ulica',
+        'nrDomu',
+        'nrLokalu',
+        'wojewodztwo',
+        'powiat',
+        'miejscowosc',
+        'gmina',
+        'poczta',
+        'kodPocztowy',
+        'kodKraju',
+        'prefixVat'
+    ];
+
+    protected $data = [];
+
+
+
+    public function __construct(array $data=[])
+    {
+        if(count($data) > 0) {
+            foreach($data as $klucz => $wartosc) {
+                if(!in_array($klucz, self::KLUCZE)) continue;
+                $this->data[$klucz] = $wartosc;
+            }
+        }
+    }
+
+    public function __set($name, $value)
+    {
+        if(in_array($name, self::KLUCZE)) {
+            $this->data[$name] = $value;
+        }
+    }
+
+    public function __get($name)
+    {
+        return $this->data[$name] ?? null;
+    }
+
+
+    public function getAdres(): string
     {
         $adres = "{$this->kodPocztowy} {$this->miejscowosc}, ";
         $adres .= "{$this->ulica} {$this->nrDomu}";
-        if ($this->nrLokalu)
-        {
+        if ($this->nrLokalu) {
             $adres .= "/{$this->nrLokalu}";
         }
 
@@ -36,7 +67,7 @@ class Podmiot
 
     public function pelnaNazwa()
     {
-        return $this->nazwa;
+        return $this->pelnaNazwa;
     }
 
     public function regon()
@@ -92,5 +123,10 @@ class Podmiot
     public function prefixVat()
     {
         return $this->prefixVat;
+    }
+
+    public function kodKraju()
+    {
+        return $this->kodKraju;
     }
 }

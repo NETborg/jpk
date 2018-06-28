@@ -10,7 +10,7 @@ class stawka_zw_Test extends Jpk_Test
         $faktura->dataWystawienia = '2017-01-01';
         $faktura->numer = '1/01/2017 FVS';
 
-        $wiersz1 = new \Jpk\FakturaWiersz();
+        $wiersz1 = new \Netborg\Jpk\FakturaWiersz();
         $wiersz1->nazwa = 'towar1';
         $wiersz1->cenaJednostkowaNetto = 100;
         $wiersz1->ilosc = 1;
@@ -18,7 +18,7 @@ class stawka_zw_Test extends Jpk_Test
         $wiersz1->stawkaVatOpis = 'zw';
         $faktura->dodajWiersz($wiersz1);
 
-        $wiersz2 = new \Jpk\FakturaWiersz();
+        $wiersz2 = new \Netborg\Jpk\FakturaWiersz();
         $wiersz2->nazwa = 'towar1';
         $wiersz2->cenaJednostkowaNetto = 200;
         $wiersz2->ilosc = 2;
@@ -26,7 +26,7 @@ class stawka_zw_Test extends Jpk_Test
         $wiersz2->stawkaVatOpis = 'zw';
         $faktura->dodajWiersz($wiersz2);
 
-        $jpkfa = new \Jpk\Jpkfa($faktura->sprzedawca, "2017-01-01", "2017-01-31", 2206);
+        $jpkfa = new \Netborg\Jpk\Jpkfa($faktura->sprzedawca, "2017-01-01", "2017-01-31", 2206);
         $jpkfa->dodajFakture($faktura);
         $jpkfa->generuj($raport_path);
 
@@ -48,7 +48,7 @@ class stawka_zw_Test extends Jpk_Test
      */
     function test_wartosc_faktur($raport_path)
     {
-        $walidator = new \Jpk\Walidator($raport_path);
+        $walidator = new \Netborg\Jpk\Walidator($raport_path);
         $this->assertEquals(500, $walidator->wartoscFaktur()); // P_15
         $this->assertEquals(500, $walidator->wartoscFakturCtrl()); // faktury ctrl
         $this->assertEquals(500, $walidator->wartoscFakturNetto()); // P_13_1
@@ -59,7 +59,7 @@ class stawka_zw_Test extends Jpk_Test
      */
     function test_wartosc_wierszy($raport_path)
     {
-        $walidator = new \Jpk\Walidator($raport_path);
+        $walidator = new \Netborg\Jpk\Walidator($raport_path);
         $this->assertEquals(500, $walidator->wartoscWierszyNetto());
         $this->assertEquals(500, $walidator->wartoscWierszyCtrl());
     }

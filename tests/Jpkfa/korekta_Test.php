@@ -20,13 +20,13 @@ class korekta_Test extends Jpk_Test
         // c) tylko wiersz po korekcie (bilans wierszy wg stanu po korekcie)
 
         // narazie wg mojego rozpoznania najbardizej prawdopodobny jest wariant c)
-        $wiersz1 = new \Jpk\FakturaWiersz();
+        $wiersz1 = new \Netborg\Jpk\FakturaWiersz();
         $wiersz1->nazwa = 'towar1';
         $wiersz1->cenaJednostkowaNetto = 100;
         $wiersz1->ilosc = 0; // nowa ilosc
         $faktura->dodajWiersz($wiersz1);
 
-        $jpkfa = new \Jpk\Jpkfa($faktura->sprzedawca, "2017-01-01", "2017-01-31", 2206);
+        $jpkfa = new \Netborg\Jpk\Jpkfa($faktura->sprzedawca, "2017-01-01", "2017-01-31", 2206);
         $jpkfa->dodajFakture($faktura);
         $jpkfa->generuj($raport_path);
         $this->assertFileExists($raport_path);
@@ -47,7 +47,7 @@ class korekta_Test extends Jpk_Test
      */
     function test_wartosc_faktur($raport_path)
     {
-        $walidator = new \Jpk\Walidator($raport_path);
+        $walidator = new \Netborg\Jpk\Walidator($raport_path);
         $this->assertEquals(0, $walidator->wartoscFaktur()); // P_15
         $this->assertEquals(0, $walidator->wartoscFakturCtrl()); // faktury ctrl
         $this->assertEquals(0, $walidator->wartoscFakturNetto()); // P_13_1
@@ -58,7 +58,7 @@ class korekta_Test extends Jpk_Test
      */
     function test_wartosc_wierszy($raport_path)
     {
-        $walidator = new \Jpk\Walidator($raport_path);
+        $walidator = new \Netborg\Jpk\Walidator($raport_path);
         $this->assertEquals(0, $walidator->wartoscWierszyNetto());
         $this->assertEquals(0, $walidator->wartoscWierszyCtrl());
     }
@@ -69,7 +69,7 @@ class korekta_Test extends Jpk_Test
     function test_pola_korekty($raport_path)
     {
         $xpath = '//p:Faktura[1]//p:RodzajFaktury';
-        $walidator = new \Jpk\Walidator($raport_path);
+        $walidator = new \Netborg\Jpk\Walidator($raport_path);
         $this->assertEquals(
             'KOREKTA',
             $walidator->dx->query($xpath)->item(0)->nodeValue,

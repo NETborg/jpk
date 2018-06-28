@@ -1,6 +1,6 @@
 <?php
 
-namespace Jpk;
+namespace Netborg\Jpk;
 
 class Jpkfa
 {
@@ -9,9 +9,12 @@ class Jpkfa
      */
     protected $bledy = [];
 
-    public function __construct($podmiot1, $data_od, $data_do, $kod_urzedu, $cel_zlozenia=1)
+    protected $generator;
+    protected $dane = [];
+
+    public function __construct(Podmiot $podmiot1, $data_od, $data_do, $kod_urzedu, $cel_zlozenia=1)
     {
-        $this->dane['xmlns'] = 'http://jpk.mf.gov.pl/wzor/2016/03/09/03095/';
+        $this->dane['xmlns'] = 'http://jpk.mf.gov.pl/wzor/2016/10/26/10261/';
         $this->dane['xmlns_etd'] = 'http://crd.gov.pl/xml/schematy/dziedzinowe/mf/2016/01/25/eD/DefinicjeTypy/';
 
         $naglowek['KodFormularza'] = 'JPK_FA';
@@ -26,7 +29,7 @@ class Jpkfa
         $naglowek['KodUrzedu'] = $kod_urzedu;
         $this->dane['Naglowek'] = $naglowek;
 
-        $this->dane['Podmiot1'] = self::mapujPodmiot($podmiot1);
+        $this->dane['Podmiot1'] = $this->mapujPodmiot($podmiot1);
 
         $this->dane['Faktury'] = [];
         $this->dane['Wiersze'] = [];
@@ -45,7 +48,7 @@ class Jpkfa
         if (!$generator)
         {
             $smarty = new \Smarty;
-            $generator = new \Jpk\GeneratorSmarty($smarty);
+            $generator = new \Netborg\Jpk\GeneratorSmarty($smarty);
         }
 
         $this->generator = $generator;
@@ -53,14 +56,14 @@ class Jpkfa
 
     public function dodajFakture(Faktura $faktura)
     {
-        $this->dane['Faktury'][] = self::mapujFakture($faktura);
+        $this->dane['Faktury'][] = $this->mapujFakture($faktura);
         $this->dane['FakturaCtrl']['LiczbaFaktur']++;
         $this->dane['FakturaCtrl']['WartoscFaktur'] += $faktura->suma('netto');
 
-        foreach ($faktura->wiersze as $wiersz)
+        foreach ($faktura->wiersze() as $wiersz)
         {
             $faktura_numer = $faktura->numer();
-            $this->dane['Wiersze'][] = self::mapujWiersz($wiersz, $faktura_numer);
+            $this->dane['Wiersze'][] = $this->mapujWiersz($wiersz, $faktura_numer);
             $this->dane['FakturaWierszCtrl']['LiczbaWierszyFaktur']++;
             $this->dane['FakturaWierszCtrl']['WartoscWierszyFaktur'] += $wiersz->sumaNetto();
         }
@@ -124,7 +127,7 @@ class Jpkfa
         $dane['P_16'] = 'false'; //metoda kasowa
         $dane['P_17'] = 'false'; // samofakturowanie
         $dane['P_18'] = 'false'; // odwrotne obciazenie
-        $dane['P_19'] = 'false'; // zwolnione z podatku
+        $dane['P_19'] = $faktura->zwolnienieVat() ? 'true' : 'false'; // zwolnione z podatku
         $dane['P_20'] = 'false';
         $dane['P_21'] = 'false';
         $dane['P_23'] = 'false';
@@ -153,8 +156,6 @@ class Jpkfa
 
     protected function mapujPodmiot(Podmiot $podmiot)
     {
-        $dane['KodKraju'] = 'PL'; // stala wartosc
-
         $dane['NIP'] = $podmiot->nip();
         $dane['PelnaNazwa'] = $podmiot->pelnaNazwa();
         $dane['Regon'] = $podmiot->regon();
@@ -168,6 +169,7 @@ class Jpkfa
         $dane['Miejscowosc'] = $podmiot->miejscowosc();
         $dane['KodPocztowy'] = $podmiot->kodPocztowy();
         $dane['Poczta'] = $podmiot->poczta();
+        $dane['KodKraju'] = $podmiot->kodKraju();
 
         return $dane;
     }

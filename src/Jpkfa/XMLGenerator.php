@@ -1,5 +1,5 @@
 <?php
-namespace Jpk;
+namespace Netborg\Jpk;
 
 interface XMLGenerator
 {

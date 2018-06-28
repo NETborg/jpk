@@ -4,7 +4,7 @@ class Jpk_Test extends PHPUnit_Framework_TestCase
 {
     public function stworz_podmiot($dane=null)
     {
-        $sprzedawca = new \Jpk\Podmiot();
+        $sprzedawca = new \Netborg\Jpk\Podmiot();
         $sprzedawca->nazwa = 'Trojmiasto.pl Sp. z o.o.';
         $sprzedawca->nip = 5833012490;
         $sprzedawca->regon = 220563678;
@@ -35,14 +35,14 @@ class Jpk_Test extends PHPUnit_Framework_TestCase
             'ulica' => 'Testowa',
             'nrDomu' => 3
         ]);
-        $faktura = new \Jpk\Faktura($sprzedawca, $nabywca);
+        $faktura = new \Netborg\Jpk\Faktura($sprzedawca, $nabywca);
 
         return $faktura;
     }
 
     public function assertXSDValid($raport_path)
     {
-        $walidator = new \Jpk\Walidator($raport_path);
+        $walidator = new \Netborg\Jpk\Walidator($raport_path);
         $this->assertTrue(
             $walidator->sprawdzZgodnoscStruktury(),
             'niezgodny z formalna struktura xsd'

@@ -1,6 +1,6 @@
 <?php
 
-namespace Jpk;
+namespace Netborg\Jpk;
 
 class Faktura
 {
@@ -11,13 +11,20 @@ class Faktura
     public $numerFakturyKorygowanej = '';
     public $okresFakturyKorygowanej = '';
 
-    protected $sumy;
-    protected $stawki = array(0, 5, 8, 23);
+    protected $sprzedawca;
+    protected $nabywca;
 
-    public function __construct($podmiot, $klient)
+    protected $wiersze = [];
+    protected $sumy;
+    protected $stawki = [0, 5, 8, 23];
+
+    public function __construct(Podmiot $podmiot, Podmiot $klient, $numer, $dataWystawienia, $dataWykonania=null)
     {
         $this->sprzedawca = $podmiot;
         $this->nabywca = $klient;
+        $this->numer = $numer;
+        $this->dataWystawienia = $dataWystawienia;
+        $this->dataWykonania = $dataWykonania ?? $dataWystawienia;
         $this->zerujSumy();
     }
 
@@ -99,7 +106,7 @@ class Faktura
 
     public function adresNabywcy()
     {
-        return $this->nabywca->get_adres();
+        return $this->nabywca->getAdres();
     }
 
     public function nazwaSprzedawcy()
@@ -109,17 +116,17 @@ class Faktura
 
     public function adresSprzedawcy()
     {
-        return $this->sprzedawca->get_adres();
+        return $this->sprzedawca->getAdres();
     }
 
     public function prefixVatSprzedawca()
     {
-        return $this->sprzedawca->prefixVat() ?: 'PL';
+        return $this->sprzedawca->prefixVat() ?? 'PL';
     }
 
     public function prefixVatNabywca()
     {
-        return $this->nabywca->prefixVat() ?: 'PL';
+        return $this->nabywca->prefixVat() ?? 'PL';
     }
 
     public function nipSprzedawca()
@@ -142,7 +149,7 @@ class Faktura
         return 'VAT';
     }
 
-    public function wiersze()
+    public function wiersze(): array
     {
         return $this->wiersze;
     }
@@ -160,5 +167,14 @@ class Faktura
     public function okresFakturyKorygowanej()
     {
         return $this->okresFakturyKorygowanej;
+    }
+
+    public function zwolnienieVat(): bool
+    {
+        foreach($this->wiersze() as $wiersz) {
+            if ($wiersz->stawkaVatOpis() === 'zw') return true;
+        }
+
+        return false;
     }
 }
